@@ -19,7 +19,8 @@
 > [!TIP]
 > **想系统学会用 AI 做这类小工具？** 这个插件就是我用 Claude Code 一个下午做出来的。从 0 基础到用 AI 做出自己的产品，完整课程和每周直播都在 👉 **[麦当的知识站 mdldm.club](https://www.mdldm.club/)**
 
-<p align="center"><img src="docs/assets/panel.png" width="380" alt="Obsidian → X 长文 插件侧边栏：选择笔记、预览结构、一键插入" /></p>
+<p align="center"><img src="docs/assets/demo.gif" alt="使用流程演示：点插件图标、选 Obsidian 笔记、一键插入 X 长文草稿" /></p>
+<p align="center"><sub>流程演示动画（编辑器为示意界面）</sub></p>
 
 ## 它能做什么
 
@@ -30,6 +31,8 @@
 | 自动处理图片 | 支持 `![[图片]]` 和 `![](图片)`，大图自动压缩，每张图等上传稳定后再继续 |
 | 逐段核对 | 插完自动对照原文，漏掉的段落补回原位 |
 | 安全 | 只写草稿，**不会点发布**；插入中途切换标签页也不影响 |
+
+<p align="center"><img src="docs/assets/panel.png" width="380" alt="Obsidian → X 长文 插件侧边栏：选择笔记、预览结构、一键插入" /></p>
 
 ## 安装
 

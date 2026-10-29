@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Obsidian → X 长文</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <header>
+    <h1>Obsidian <span>→</span> X 长文</h1>
+    <p class="sub">只写草稿，不会发布</p>
+  </header>
+
+  <section class="card" id="vaultCard">
+    <div class="row">
+      <div>
+        <div class="label">Obsidian 库</div>
+        <div id="vaultName" class="value">未选择</div>
+      </div>
+      <div class="actions">
+        <button id="btnRegrant" class="hidden">授权</button>
+        <button id="btnRescan" class="ghost hidden" title="重新扫描">刷新</button>
+        <button id="btnPick" class="ghost">选择</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="noteCard">
+    <div class="label">选择笔记 <span class="hint">按最近修改排序</span></div>
+    <input id="search" type="search" placeholder="搜索笔记名或路径…" disabled>
+    <ul id="notes" class="notes"></ul>
+  </section>
+
+  <section class="card hidden" id="previewCard">
+    <div class="label">预览</div>
+    <div id="pvTitle" class="pv-title"></div>
+    <div id="pvMeta" class="pv-meta"></div>
+    <ol id="pvList" class="pv-list"></ol>
+    <ul id="pvWarn" class="warn"></ul>
+  </section>
+
+  <section class="card" id="runCard">
+    <div id="target" class="target">检测编辑页中…</div>
+    <label class="opt"><input type="checkbox" id="optVerify" checked> 插入后逐段核对，漏掉的自动补回</label>
+    <label class="opt">每张图上传后等待 <input type="number" id="optSettle" min="3" max="60" value="12"> 秒再继续</label>
+    <div class="buttons">
+      <button id="btnRun" class="primary" disabled>插入到当前长文草稿</button>
+      <button id="btnStop" class="ghost hidden">停止</button>
+    </div>
+    <div class="bar"><div id="barFill"></div></div>
+    <ol id="log" class="log"></ol>
+  </section>
+
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>

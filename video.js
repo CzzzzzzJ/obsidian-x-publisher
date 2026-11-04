@@ -52,7 +52,8 @@ async function selectProject(pr) {
   const b = pr.data;
   $('projCard').classList.remove('hidden');
   $('projTitle').textContent = b.name;
-  $('projMeta').textContent = `${pr.dir} · 视频 ${b.video} · 封面 ${Object.keys(b.covers || {}).join(' / ')}`;
+  const when = b.schedule ? new Date(b.schedule).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
+  $('projMeta').textContent = `${pr.dir} · 视频 ${b.video} · 封面 ${Object.keys(b.covers || {}).join(' / ')} · ${when ? `定时 ${when}` : '立即发布'}`;
 
   $('projCheck').innerHTML = '';
   result.errors.forEach(m => $('projCheck').appendChild(el('li', '', `❌ ${m}`)));

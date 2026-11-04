@@ -93,3 +93,36 @@ input[type=number] { width: 52px; font: inherit; padding: 1px 4px; border: 1px s
 .log li.ok { color: var(--green); }
 .log li.err { color: var(--red); font-weight: 700; }
 .log li.info { color: var(--muted); }
+
+/* 页签 */
+.tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.tab { background: var(--surface); color: var(--text); flex: 1; }
+.tab.on { background: var(--text); color: var(--bg); }
+
+.opt.path { display: flex; align-items: center; gap: 6px; margin-top: 8px; color: var(--muted); font-size: 12px; }
+.opt.path input { flex: 1; min-width: 0; font: 12px ui-monospace, Menlo, monospace; padding: 3px 6px;
+  border: 1px solid var(--muted); border-radius: 4px; background: var(--surface); color: var(--text); }
+
+/* 平台勾选 */
+.plats { list-style: none; margin: 8px 0 0; padding: 0; }
+.plats li { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-top: 1px dashed var(--soft); }
+.plats li:first-child { border-top: 0; }
+.plats .pn { font-weight: 800; min-width: 52px; }
+.plats .pd { color: var(--muted); font-size: 12px; word-break: break-all; }
+.plats li.skip { opacity: .5; }
+
+/* 平台状态卡 */
+.st { margin-bottom: 10px; }
+.st .row { margin-bottom: 4px; }
+.st .name { font-weight: 900; }
+.pill { font-size: 12px; font-weight: 800; padding: 1px 8px; border-radius: 99px; border: 2px solid var(--line); background: var(--soft); color: var(--text); }
+.pill.ok { background: var(--green); color: #fff; }
+.pill.run { background: var(--blue); color: #fff; }
+.pill.err { background: var(--red); color: #fff; }
+.st ol { margin: 0; padding-left: 18px; font-size: 12px; }
+.st li.ok { color: var(--text); }
+.st li.info { color: var(--muted); }
+.st li.err { color: var(--red); font-weight: 700; }
+.st button { padding: 2px 8px; font-size: 12px; }
+.warn li.info { color: var(--muted); }
+.warn li.ok { color: var(--green); font-weight: 700; }

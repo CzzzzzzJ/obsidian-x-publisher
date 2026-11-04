@@ -1,5 +1,7 @@
 import { parseNote } from './lib/md.js';
 import { xEngine } from './lib/engine.js';
+import { startDevBridge } from './lib/devbridge.js';
+import { initVideo } from './video.js';
 import { savedVault, pickVault, regrant, scan, readText, resolveRef, loadImage } from './lib/vault.js';
 
 const $ = (id) => document.getElementById(id);
@@ -195,9 +197,16 @@ async function run() {
         const html = seg.type === 'html' ? seg.html
           : seg.type === 'video' ? `<p><strong>【🎬 此处插入视频：${seg.ref.split('/').pop()}】</strong></p>`
           : `<p><strong>【缺图：${seg.ref}】</strong></p>`;
-        const before = (await exec(tabId, 'state')).blocks;
+        const b0 = await exec(tabId, 'state');
         await exec(tabId, 'pasteHTML', html);
-        const s = await waitFor(tabId, x => x.blocks > before, 10000, 500);
+        // 块数或图片数变少 = 粘贴把已有内容替换掉了，立刻撤销，别让后面继续在残稿上写
+        const s = await waitFor(tabId, x => x.blocks > b0.blocks || x.blocks < b0.blocks || x.imgs < b0.imgs, 10000, 500);
+        if (s && (s.blocks < b0.blocks || s.imgs < b0.imgs)) {
+          await exec(tabId, 'undo');
+          await sleep(800);
+          const r = await exec(tabId, 'state');
+          throw new Error(`粘贴覆盖了已有内容，${r.blocks >= b0.blocks && r.imgs >= b0.imgs ? '已撤销恢复' : '撤销没能完全恢复，请在编辑器里按 ⌘Z'}：${(seg.texts && seg.texts[0].t) || seg.ref}`);
+        }
         if (!s) throw new Error(`文字写入失败：${(seg.texts && seg.texts[0].t) || seg.ref}`);
         await sleep(800);
         log(`${tag} ${seg.type === 'html' ? `📝 ${seg.texts[0].t.slice(0, 18)}…` : `🎬 占位：${seg.ref.split('/').pop()}`}`, 'ok');
@@ -283,3 +292,16 @@ chrome.tabs.onUpdated.addListener((_, info) => { if (info.status === 'complete' 
   }
   refreshTarget();
 })();
+
+// ---------- 页签 ----------
+function showView(v) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.view === v));
+  document.getElementById('view-video').classList.toggle('hidden', v !== 'video');
+  document.getElementById('view-article').classList.toggle('hidden', v !== 'article');
+  try { localStorage.setItem('view', v); } catch { /* 无痕模式 */ }
+}
+document.querySelectorAll('.tab').forEach(b => { b.onclick = () => showView(b.dataset.view); });
+try { showView(localStorage.getItem('view') || 'video'); } catch { showView('video'); }
+
+initVideo();
+startDevBridge();

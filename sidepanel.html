@@ -2,15 +2,55 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <title>Obsidian → X 长文</title>
+  <title>麦当发布助手</title>
   <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
   <header>
-    <h1>Obsidian <span>→</span> X 长文</h1>
-    <p class="sub">只写草稿，不会发布</p>
+    <h1>麦当发布助手</h1>
+    <p class="sub">只填写、不发布，最后由你点发布</p>
+    <nav class="tabs">
+      <button data-view="video" class="tab on">视频分发</button>
+      <button data-view="article" class="tab">X 长文</button>
+    </nav>
   </header>
 
+  <main id="view-video">
+    <section class="card">
+      <div class="row">
+        <div>
+          <div class="label">NAS 发布目录</div>
+          <div id="nasName" class="value">未选择</div>
+        </div>
+        <div class="actions">
+          <button id="btnNasRegrant" class="hidden">授权</button>
+          <button id="btnNasRescan" class="ghost hidden">刷新</button>
+          <button id="btnNasPick" class="ghost">选择</button>
+        </div>
+      </div>
+      <label class="opt path">本机路径 <input id="nasPath" type="text" spellcheck="false"></label>
+    </section>
+
+    <section class="card">
+      <div class="label">发布工程 <span class="hint">目录里有 publish.json 的</span></div>
+      <ul id="projects" class="notes"></ul>
+    </section>
+
+    <section class="card hidden" id="projCard">
+      <div id="projTitle" class="pv-title"></div>
+      <div id="projMeta" class="pv-meta"></div>
+      <ul id="projCheck" class="warn"></ul>
+      <ul id="platList" class="plats"></ul>
+      <div class="buttons">
+        <button id="btnPublish" class="primary" disabled>一键填写所选平台</button>
+        <button id="btnPubStop" class="ghost hidden">停止</button>
+      </div>
+    </section>
+
+    <section id="statusList"></section>
+  </main>
+
+  <main id="view-article" class="hidden">
   <section class="card" id="vaultCard">
     <div class="row">
       <div>
@@ -50,6 +90,7 @@
     <div class="bar"><div id="barFill"></div></div>
     <ol id="log" class="log"></ol>
   </section>
+  </main>
 
   <script type="module" src="sidepanel.js"></script>
 </body>

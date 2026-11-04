@@ -1,16 +1,16 @@
 <div align="center">
 
-# Obsidian → X 长文
+# 麦当发布助手
 
-**在 Obsidian 里排好版，一键把标题、封面、文字和图片按顺序写进 X 长文编辑器。**
+**一期视频，一键填好 B 站、小红书、抖音、视频号、YouTube、X 六个平台；Obsidian 笔记，一键写进 X 长文。**
 
-给在 X 上写长文、用 Obsidian 管理内容的创作者。不用再一段一段复制、一张一张传图。
+给多平台发视频、在 X 上写长文的创作者。插件只负责填写，最后的「发布」由你自己点。
 
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-2f6bff.svg)](manifest.json)
-[![Version](https://img.shields.io/badge/version-0.1.0-ffd43b.svg)](manifest.json)
+[![Version](https://img.shields.io/badge/version-0.2.0-ffd43b.svg)](manifest.json)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-[安装](#安装) · [使用](#使用) · [笔记写法](#笔记写法) · [原理](#原理和踩过的坑)
+[安装](#安装) · [视频多平台分发](#视频多平台分发) · [X 长文](#x-长文使用) · [原理](#原理和踩过的坑)
 
 [麦当的知识站](https://www.mdldm.club/) · [X / Twitter](https://x.com/czzzzzzJ_) · [联系作者](#联系作者)
 
@@ -23,6 +23,19 @@
 <p align="center"><sub>流程演示动画（编辑器为示意界面）</sub></p>
 
 ## 它能做什么
+
+### 视频多平台分发（v0.2 新增）
+
+| 能力 | 说明 |
+| --- | --- |
+| 一个工程文件 | 每期视频一个目录：成片、封面、`publish.json`（各平台标题、正文、标签、用哪张封面） |
+| 六个平台一键填写 | 自动打开 B 站、小红书、抖音、视频号、YouTube、X 的上传页，传视频、传封面、填标题正文、选话题 |
+| 大文件直传 | 视频通过 Chrome 调试接口直接交本地路径，1.5GB 的成片也不卡 |
+| 发前校验 | 字数上限、必带标签、小红书/抖音/视频号不放链接和微信号，有问题先拦下 |
+| 等上传完再补封面 | 小红书、视频号要等视频传完才能改封面，插件在后台等着，传完自动补上 |
+| 安全 | 只填写，**不会点发布**；每个平台一张状态卡，跳过了什么、哪里异常都写清楚 |
+
+### X 长文
 
 | 能力 | 说明 |
 | --- | --- |
@@ -39,12 +52,34 @@
 1. 下载本仓库：`git clone https://github.com/CzzzzzzJ/obsidian-x-publisher.git`，或点右上角 **Code → Download ZIP** 后解压
 2. Chrome 打开 `chrome://extensions`，打开右上角「开发者模式」
 3. 点「加载已解压的扩展程序」，选择仓库文件夹
-4. 点工具栏的拼图图标，把「Obsidian → X 长文」固定出来
+4. 点工具栏的拼图图标，把「麦当发布助手」固定出来
 
-## 使用
+## 视频多平台分发
+
+1. 每期视频准备一个工程目录（建议放在 NAS 或固定的「视频导出」文件夹下）：
+
+   ```
+   视频导出/系列名/第几期/
+     成片.mp4
+     封面/cover-3x4.png   竖：小红书、抖音竖封面、视频号个人主页卡片
+     封面/cover-4x3.png   横：B 站、抖音横封面、视频号分享卡片
+     封面/cover-16x9.jpg  YouTube 缩略图
+     publish.json
+   ```
+
+   `publish.json` 的格式见 [docs/multi-platform-design.md](docs/multi-platform-design.md)。可以先用 `node tools/validate.mjs <工程目录>` 在本地校验一遍
+2. 先在 Chrome 里登录好各个平台的创作者后台
+3. 打开插件面板，切到「视频分发」，点「选择」选中「视频导出」文件夹，并填好它在本机的绝对路径
+4. 点一期工程，看校验结果，勾选要发的平台，点「一键填写所选平台」
+5. 插件依次打开各平台上传页并填写。全部变成「待你发布」后，逐个标签页检查、补上必填的声明项，自己点发布
+
+> 浏览器顶部会出现「正在调试此浏览器」的提示条，这是插件用 Chrome 调试接口上传本地视频，填写结束后会自动断开。
+> 各平台上传页的结构和实测细节见 [docs/platform-notes.md](docs/platform-notes.md)。
+
+## X 长文使用
 
 1. 在 X 上新建一篇长文，停在编辑页（`x.com/compose/articles/edit/...`）
-2. 点工具栏的插件图标，右侧打开面板
+2. 点工具栏的插件图标，右侧打开面板，切到「X 长文」
 3. 第一次使用：点「选择」，选中你的 Obsidian 库文件夹。之后每次打开面板，最多点一下「授权」
 4. 在列表里点选笔记（按最近修改排序，可搜索），确认预览里的结构和图片
 5. 点「插入到当前长文草稿」，等进度跑完，检查后自己发布
@@ -107,9 +142,18 @@ X 长文编辑器基于 Draft.js。插件用 `chrome.scripting.executeScript({ w
 
 > 这是非官方工具，依赖 X 编辑器的页面结构。X 改版后可能失效，欢迎提 Issue。
 
+### 视频分发的做法
+
+各平台上传页都用 `chrome.debugger`（Chrome DevTools Protocol）操作：[`lib/cdp.js`](lib/cdp.js) 用 `DOM.setFileInputFiles` 把本地绝对路径交给上传框（能穿透 Shadow DOM，大视频不经过 JS 内存），用 `Input.insertText` 和真实按键输入文字，需要悬停才出现的按钮用真实鼠标事件。每个平台一个适配器，放在 [`lib/platforms/`](lib/platforms/)，平台改版只需要修对应的文件。
+
 ### 文件
 
-- `sidepanel.*`：面板界面和整体流程
+- `sidepanel.*`：面板界面；`video.js`：视频分发页签
+- `lib/publish.js`：扫描工程、按平台调度、等上传完成
+- `lib/bundle.js`：`publish.json` 校验规则（`tools/validate.mjs` 是命令行版）
+- `lib/platforms/*.js`：B 站、小红书、抖音、视频号、YouTube、X 的适配器
+- `lib/cdp.js`：Chrome 调试接口驱动
+- `lib/devbridge.js`、`tools/`：开发用的本机桥接，只在「加载已解压的扩展程序」时启用
 - `lib/md.js`：Obsidian Markdown → 片段（测试：`node tests/md.test.mjs <笔记路径>`）
 - `lib/engine.js`：在编辑页里执行的插入引擎
 - `lib/vault.js`：读取本地库（File System Access API，授权句柄存在 IndexedDB）

@@ -1,6 +1,6 @@
 // 侧边栏「视频分发」页签
 import { idbGet, idbSet } from './lib/vault.js';
-import { scanProjects, check, run, ORDER } from './lib/publish.js';
+import { scanProjects, check, ORDER } from './lib/publish.js';
 import { PLATFORMS } from './lib/bundle.js';
 
 const $ = (id) => document.getElementById(id);
@@ -10,7 +10,7 @@ const DEFAULT_PATH = '/Volumes/sata11-176XXXX6901/视频导出';
 let root = null;        // NAS 目录句柄
 let projects = [];
 let current = null;     // { project, result }
-let running = false, stopFlag = false;
+let running = false;
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -72,8 +72,7 @@ async function selectProject(pr) {
     li.append(cb, desc);
     $('platList').appendChild(li);
   }
-  $('btnPublish').disabled = !!result.errors.length;
-  $('statusList').innerHTML = '';
+  $('btnPublish').disabled = running || !!result.errors.length;
 }
 
 // ---------- 状态卡 ----------
@@ -99,6 +98,20 @@ function renderState(st) {
   st.logs.forEach(l => card._ol.appendChild(el('li', l.kind, l.msg)));
 }
 
+// 后台推来的任务状态 → 状态卡
+function renderJob(job) {
+  running = !!(job && job.running);
+  $('btnPubStop').classList.toggle('hidden', !running);
+  if (current) $('btnPublish').disabled = running || !!current.result.errors.length;
+  $('statusList').innerHTML = ''; for (const k in cards) delete cards[k];
+  if (!job) return;
+  const head = el('div', 'label', running ? `正在填写：${job.name}` : `上一轮：${job.name}`);
+  const hint = el('div', 'hint', running ? '可以关掉面板或切到别的页面，填完会弹通知' : (job.interrupted ? '浏览器中途重启过插件后台，这一轮没有跑完' : '检查各平台页面后自己点发布'));
+  const box = el('div', 'job-head'); box.append(head, hint);
+  $('statusList').appendChild(box);
+  job.states.forEach(renderState);
+}
+
 async function publish() {
   if (!current || running) return;
   const platforms = [...$('platList').querySelectorAll('input:checked')].map(i => i.value);
@@ -106,18 +119,13 @@ async function publish() {
   const rootPath = $('nasPath').value.trim();
   if (!rootPath.startsWith('/')) { alert('请先填 NAS 目录在本机的绝对路径'); return; }
   try { localStorage.setItem(PATH_KEY, rootPath); } catch { /* 无痕模式 */ }
-
-  running = true; stopFlag = false;
-  $('btnPublish').disabled = true; $('btnPubStop').classList.remove('hidden');
-  $('statusList').innerHTML = ''; for (const k in cards) delete cards[k];
-  try {
-    await run(current.project, { rootPath, platforms, onChange: renderState, shouldStop: () => stopFlag });
-  } catch (e) {
-    alert(`中断：${e.message}`);
-  } finally {
-    running = false;
-    $('btnPublish').disabled = false; $('btnPubStop').classList.add('hidden');
-  }
+  const win = await chrome.windows.getCurrent();
+  // 文件夹句柄不能跨进程传，只传相对路径和 publish.json 内容；流程在插件后台跑
+  const r = await chrome.runtime.sendMessage({
+    type: 'publish:start', rootPath, platforms, windowId: win.id,
+    project: { dir: current.project.dir, data: current.project.data },
+  });
+  if (!r || !r.ok) alert(`没能开始：${r ? r.error : '插件后台没有响应'}`);
 }
 
 // ---------- 初始化 ----------
@@ -139,7 +147,9 @@ export async function initVideo() {
   };
   $('btnNasRescan').onclick = () => root && loadRoot(root);
   $('btnPublish').onclick = publish;
-  $('btnPubStop').onclick = () => { stopFlag = true; };
+  $('btnPubStop').onclick = () => chrome.runtime.sendMessage({ type: 'publish:stop' });
+  chrome.runtime.onMessage.addListener((msg) => { if (msg.type === 'job') renderJob(msg.job); });
+  renderJob(await chrome.runtime.sendMessage({ type: 'publish:get' }));
 
   const h = await idbGet(KEY);
   if (h) {
@@ -154,6 +164,12 @@ export async function initVideo() {
   window.__dev = {
     projects: () => projects.map(p => ({ dir: p.dir, name: p.data && p.data.name, error: p.error })),
     check: async (dir) => { const pr = projects.find(p => p.dir === dir); await selectProject(pr); return current.result; },
+    // 按工程目录发起一轮；platforms 不传就用勾选的
+    start: async (dir, platforms) => {
+      const pr = projects.find(p => p.dir === dir); await selectProject(pr);
+      if (platforms) $('platList').querySelectorAll('input').forEach(i => { i.checked = platforms.includes(i.value); });
+      await publish(); return true;
+    },
     state: () => ({ running, statuses: Object.fromEntries(Object.entries(cards).map(([k, c]) => [k, { status: c._pill.textContent, logs: [...c._ol.children].map(li => li.textContent) }])) }),
   };
 }

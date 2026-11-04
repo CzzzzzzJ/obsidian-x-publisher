@@ -126,3 +126,7 @@ input[type=number] { width: 52px; font: inherit; padding: 1px 4px; border: 1px s
 .st button { padding: 2px 8px; font-size: 12px; }
 .warn li.info { color: var(--muted); }
 .warn li.ok { color: var(--green); font-weight: 700; }
+
+.job-head { margin: 4px 2px 10px; }
+.job-head .label { margin-bottom: 0; }
+.job-head .hint { margin-left: 0; }

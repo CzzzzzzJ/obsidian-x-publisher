@@ -171,6 +171,12 @@ export async function initVideo() {
       if (platforms) $('platList').querySelectorAll('input').forEach(i => { i.checked = platforms.includes(i.value); });
       await publish(); return true;
     },
+    // 不经过文件夹授权，直接用传入的 publish.json 内容发起（开发验证用）
+    startRaw: async (project, platforms, rootPath) => {
+      const win = await chrome.windows.getCurrent();
+      return chrome.runtime.sendMessage({ type: 'publish:start', project, platforms, rootPath, windowId: win.id });
+    },
+    job: () => chrome.runtime.sendMessage({ type: 'publish:get' }),
     state: () => ({ running, statuses: Object.fromEntries(Object.entries(cards).map(([k, c]) => [k, { status: c._pill.textContent, logs: [...c._ol.children].map(li => li.textContent) }])) }),
   };
 }

@@ -11,7 +11,9 @@
 //   ## 八、X         整节就是推文
 // 工程目录里：成片.mp4、封面/cover-3x4.png、cover-4x3.png、cover-16x9.jpg（有哪个用哪个）
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { join, relative, basename } from 'node:path';
+import { join, relative, basename, dirname } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { validate } from '../lib/bundle.js';
 
 const args = process.argv.slice(2);
@@ -75,6 +77,12 @@ if ((s = sec('视频号'))) { const b = splitTopics(field(s, '描述') || ''); p
 if ((s = sec('YouTube'))) platforms.youtube = { covers: pick('16x9'), title: field(s, '标题'), desc: field(s, '简介'), tags: (field(s, '标签') || '').split(/[,，]/).map(x => x.trim()).filter(Boolean) };
 if ((s = sec('X'))) platforms.x = { covers: [], text: clean(s) };
 
+// 成片时长（秒）：有 ffprobe 就读出来，给需要时长的平台用
+let durationSec;
+if (video) {
+  try { durationSec = Math.round(+execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', join(dir, video)]).toString().trim()); } catch { /* 没装 ffprobe */ }
+}
+
 const out = {
   version: 1,
   id: basename(dir),
@@ -83,12 +91,20 @@ const out = {
   source: mdPath.replace(/^.*?\/doc\//, ''),
   ...(files.includes('发布素材.md') ? { source_backup: '发布素材.md' } : {}),
   video,
+  ...(durationSec ? { durationSec } : {}),
   ...(files.includes('字幕.srt') ? { subtitle: '字幕.srt' } : {}),
   requiredTags: [require_],
   ...(schedule ? { schedule } : {}),
   covers,
   platforms,
 };
+// 本机私有扩展（不提交）：可以往 out.platforms 里加自己的平台
+const localExt = join(dirname(fileURLToPath(import.meta.url)), 'make-publish.local.mjs');
+if (existsSync(localExt)) {
+  const m = await import(localExt);
+  if (m.extend) m.extend({ out, sec, field, header, md, covers, pick });
+}
+
 // 重新生成时保留手动加的 skip（比如某平台已经发过）
 const target = join(dir, 'publish.json');
 if (existsSync(target)) {

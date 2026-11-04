@@ -7,7 +7,7 @@
 给多平台发视频、在 X 上写长文的创作者。插件只负责填写，最后的「发布」由你自己点。
 
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-2f6bff.svg)](manifest.json)
-[![Version](https://img.shields.io/badge/version-0.2.0-ffd43b.svg)](manifest.json)
+[![Version](https://img.shields.io/badge/version-0.2.1-ffd43b.svg)](manifest.json)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 [安装](#安装) · [视频多平台分发](#视频多平台分发) · [X 长文](#x-长文使用) · [原理](#原理和踩过的坑)
@@ -33,6 +33,8 @@
 | 大文件直传 | 视频通过 Chrome 调试接口直接交本地路径，1.5GB 的成片也不卡 |
 | 发前校验 | 字数上限、必带标签、小红书/抖音/视频号不放链接和微信号，有问题先拦下 |
 | 等上传完再补封面 | 小红书、视频号要等视频传完才能改封面，插件在后台等着，传完自动补上 |
+| 定时发布 | `publish.json` 写上时间，六个平台的定时都会设好（B 站、小红书、抖音、视频号、YouTube、X） |
+| 不打扰 | 上传页在后台打开，填写时不抢你正在看的页面；关掉面板也继续跑，工具栏图标显示进度，结束弹通知 |
 | 安全 | 只填写，**不会点发布**；每个平台一张状态卡，跳过了什么、哪里异常都写清楚 |
 
 ### X 长文
@@ -67,11 +69,12 @@
      publish.json
    ```
 
-   `publish.json` 的格式见 [docs/multi-platform-design.md](docs/multi-platform-design.md)。可以先用 `node tools/validate.mjs <工程目录>` 在本地校验一遍
+   `publish.json` 的格式见 [docs/multi-platform-design.md](docs/multi-platform-design.md)。也可以从发布素材 md 直接生成：`node tools/make-publish.mjs <发布素材.md> <工程目录>`（会顺带校验）
 2. 先在 Chrome 里登录好各个平台的创作者后台
 3. 打开插件面板，切到「视频分发」，点「选择」选中「视频导出」文件夹，并填好它在本机的绝对路径
 4. 点一期工程，看校验结果，勾选要发的平台，点「一键填写所选平台」
-5. 插件依次打开各平台上传页并填写。全部变成「待你发布」后，逐个标签页检查、补上必填的声明项，自己点发布
+5. 插件在后台依次打开各平台上传页并填写，你可以关掉面板去做别的。工具栏图标会显示进度，结束时弹通知
+6. 全部变成「待你发布」后，逐个标签页检查、补上必填的声明项，自己点发布（设了定时就点「定时发布」）
 
 > 浏览器顶部会出现「正在调试此浏览器」的提示条，这是插件用 Chrome 调试接口上传本地视频，填写结束后会自动断开。
 > 各平台上传页的结构和实测细节见 [docs/platform-notes.md](docs/platform-notes.md)。

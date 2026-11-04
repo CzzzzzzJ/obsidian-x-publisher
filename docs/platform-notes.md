@@ -4,6 +4,22 @@
 > 全部用 chrome.debugger（CDP）完成：文件用 `DOM.setFileInputFiles` 交本地路径，文字用 `Input.insertText` + 真实回车，
 > 需要悬停/点击的地方用 `Input.dispatchMouseEvent`。开发时用 `tools/` 下的桥接脚本驱动。
 
+## 后台模式与定时发布（v0.2.1，2026-11-04 用第 31 期情绪之城实测）
+
+- 填写流程跑在扩展后台（service worker），上传页用 `active:false` 在后台打开，调试器开 `Emulation.setFocusEmulationEnabled` 让后台页也能正常输入。
+- 后台标签页不渲染画面：**B 站封面编辑器**（要画布裁剪）在后台做不成，改为 `withFocus` 短暂切到前台；其余平台（小红书悬停编辑封面、抖音、视频号、YouTube、X）在后台都正常。
+- 每个封面、定时步骤都回读确认，避免「日志说成功、实际没设上」。
+- 关含未保存内容的上传页会弹「离开此网站？」，会卡住整个浏览器的消息响应；开发时关标签页要先处理掉这个弹窗。
+
+| 平台 | 定时控件 | 做法 |
+|---|---|---|
+| B 站 | `.time-container` 开关 + 自定义日历/时间面板（时区默认 UTC+08:00） | 开关 `.click()`；日期格子、时/分列表要合成完整鼠标事件（`fire`）；跨月点 `.next-btn-day` |
+| 小红书 | `.post-time-switch-container` 开关 + 可输入的日期框 | 开关合成鼠标事件；框里全选后输入 `2026-11-05 18:00` 回车 |
+| 抖音 | 「定时发布」单选 + Semi 日期框（2 小时后～14 天内） | 输入 `2026-11-05 18:00` 回车，Esc 收起日历 |
+| 视频号 | 「定时」单选 + WeUI 日历 + 时/分两列 | 日期框合成鼠标事件打开，点日期 `<a>`，再点时、分 |
+| YouTube | 最后一步「公开范围」→「安排时间」 | 先选「不是面向儿童」，点 `button[test-id=REVIEW]`，展开 `#second-container-expand-button`，日期弹窗输入 `2026年11月5日`，时间框输入 `18:00`；时区默认 GMT+0800 |
+| X | 发帖框 `scheduleOption` → 月/日/年/时/分 5 个 select | 原生 setter 设值 + change，点 `scheduledConfirmationPrimaryAction`，确认出现「Will send on…」 |
+
 ## 通用经验
 
 - **文件输入框**：用 JS 表达式找到元素，再按 `objectId` 交给 `DOM.setFileInputFiles`（`tools/setfiles.mjs` 的 `setFilesByExpr`）。这样能穿透 Shadow DOM，大视频也不经过 JS 内存。

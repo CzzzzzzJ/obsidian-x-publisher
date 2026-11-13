@@ -74,6 +74,8 @@ async function selectProject(pr) {
     $('platList').appendChild(li);
   }
   $('btnPublish').disabled = running || !!result.errors.length;
+  $('btnCheck').disabled = running;
+  $('btnLinks').disabled = running;
 }
 
 // ---------- 状态卡 ----------
@@ -93,7 +95,7 @@ function renderState(st) {
     $('statusList').appendChild(card);
   }
   card._pill.textContent = st.status;
-  card._pill.className = 'pill ' + ({ 待你发布: 'ok', 已填写: 'ok', 异常: 'err', 上传超时: 'err', 填写中: 'run', 上传中: 'run', 打开上传页: 'run' }[st.status] || '');
+  card._pill.className = 'pill ' + ({ 待你发布: 'ok', 已填写: 'ok', 已登录: 'ok', 已发布: 'ok', 已上线: 'ok', 异常: 'err', 上传超时: 'err', 未登录: 'err', 未找到: 'err', 出错: 'err', 填写中: 'run', 上传中: 'run', 检查登录: 'run', 定时: 'run', 审核中: 'run', 转码中: 'run' }[st.status] || (/^上传中/.test(st.status) ? 'run' : ''));
   card._go.classList.toggle('hidden', !st.tabId);
   card._ol.innerHTML = '';
   st.logs.forEach(l => card._ol.appendChild(el('li', l.kind, l.msg)));
@@ -111,6 +113,66 @@ function renderJob(job) {
   const box = el('div', 'job-head'); box.append(head, hint);
   $('statusList').appendChild(box);
   job.states.forEach(renderState);
+}
+
+// 只检查各平台登录状态，不填写；查完关掉页面
+async function checkLogins() {
+  if (!current || running) return;
+  const platforms = [...$('platList').querySelectorAll('input:checked')].map(i => i.value);
+  if (!platforms.length) return;
+  $('btnCheck').disabled = true; $('btnCheck').textContent = '检查中…';
+  try {
+    const win = await chrome.windows.getCurrent();
+    const r = await chrome.runtime.sendMessage({ type: 'publish:check', platforms, windowId: win.id });
+    if (!r || !r.ok) { alert(`检查失败：${r ? r.error : '插件后台没有响应'}`); return; }
+    $('statusList').innerHTML = ''; for (const k in cards) delete cards[k];
+    const bad = Object.entries(r.result).filter(([, v]) => !v.ok);
+    const head = el('div', 'job-head'); head.append(el('div', 'label', bad.length ? `${bad.length} 个平台需要先登录` : '全部已登录，可以一键填写'));
+    $('statusList').appendChild(head);
+    for (const [id, v] of Object.entries(r.result)) {
+      renderState({ id, name: PLATFORMS[id].name, status: v.ok ? '已登录' : '未登录', logs: v.ok ? [] : [{ kind: 'err', msg: v.reason }], tabId: null });
+    }
+  } finally {
+    $('btnCheck').disabled = false; $('btnCheck').textContent = '检查登录';
+  }
+}
+
+// 发布后回传链接：查各平台作品管理页，结果写进 NAS 工程目录的 发布记录.json
+async function backfillLinks() {
+  if (!current || running) return;
+  const platforms = Object.keys(current.project.data.platforms).filter(id => !current.project.data.platforms[id].skip);
+  // 写文件要读写权限：在这次点击里申请（浏览器只允许在用户点击时弹授权）
+  const canWrite = (await root.requestPermission({ mode: 'readwrite' })) === 'granted';
+  $('btnLinks').disabled = true; $('btnLinks').textContent = '回填中…';
+  try {
+    const win = await chrome.windows.getCurrent();
+    const r = await chrome.runtime.sendMessage({ type: 'publish:links', platforms, windowId: win.id,
+      project: { dir: current.project.dir, data: current.project.data } });
+    if (!r || !r.ok) { alert(`回填失败：${r ? r.error : '插件后台没有响应'}`); return; }
+    $('statusList').innerHTML = ''; for (const k in cards) delete cards[k];
+    const head = el('div', 'job-head');
+    let saved = '';
+    if (canWrite) {
+      const fh = await current.project.handle.getFileHandle('发布记录.json', { create: true });
+      let old = {};
+      try { old = JSON.parse(await (await fh.getFile()).text() || '{}'); } catch { /* 新文件 */ }
+      const rec = { updatedAt: new Date().toISOString(), platforms: { ...(old.platforms || {}) } };
+      for (const [id, v] of Object.entries(r.result)) if (v.url || !(rec.platforms[id] && rec.platforms[id].url)) rec.platforms[id] = { name: PLATFORMS[id].name, ...v };
+      const w = await fh.createWritable(); await w.write(JSON.stringify(rec, null, 2) + '\n'); await w.close();
+      saved = '已写入 NAS：发布记录.json';
+    } else saved = '没有写入权限，结果只显示在这里';
+    head.append(el('div', 'label', '发布链接'), el('div', 'hint', saved));
+    $('statusList').appendChild(head);
+    for (const [id, v] of Object.entries(r.result)) {
+      const logs = [];
+      if (v.url) logs.push({ kind: 'ok', msg: v.url });
+      if (v.time) logs.push({ kind: 'info', msg: typeof v.time === 'number' ? new Date(v.time).toLocaleString('zh-CN') : String(v.time) });
+      if (v.note) logs.push({ kind: 'info', msg: v.note });
+      renderState({ id, name: PLATFORMS[id].name, status: v.status, logs, tabId: null });
+    }
+  } finally {
+    $('btnLinks').disabled = false; $('btnLinks').textContent = '回填链接';
+  }
 }
 
 async function publish() {
@@ -137,17 +199,19 @@ export async function initVideo() {
 
   $('btnNasPick').onclick = async () => {
     try {
-      const h = await window.showDirectoryPicker({ id: 'nas-root', mode: 'read' });
+      const h = await window.showDirectoryPicker({ id: 'nas-root', mode: 'readwrite' });
       await idbSet(KEY, h);
       loadRoot(h);
     } catch (e) { if (e.name !== 'AbortError') alert(e.message); }
   };
   $('btnNasRegrant').onclick = async () => {
     const h = await idbGet(KEY);
-    if (h && (await h.requestPermission({ mode: 'read' })) === 'granted') loadRoot(h);
+    if (h && (await h.requestPermission({ mode: 'readwrite' })) === 'granted') loadRoot(h);
   };
   $('btnNasRescan').onclick = () => root && loadRoot(root);
   $('btnPublish').onclick = publish;
+  $('btnCheck').onclick = checkLogins;
+  $('btnLinks').onclick = backfillLinks;
   $('btnPubStop').onclick = () => chrome.runtime.sendMessage({ type: 'publish:stop' });
   chrome.runtime.onMessage.addListener((msg) => { if (msg.type === 'job') renderJob(msg.job); });
   renderJob(await chrome.runtime.sendMessage({ type: 'publish:get' }));
@@ -177,6 +241,8 @@ export async function initVideo() {
       return chrome.runtime.sendMessage({ type: 'publish:start', project, platforms, rootPath, windowId: win.id });
     },
     job: () => chrome.runtime.sendMessage({ type: 'publish:get' }),
+    links: async (project, platforms) => chrome.runtime.sendMessage({ type: 'publish:links', project, platforms, windowId: (await chrome.windows.getCurrent()).id }),
+    checkLogin: async (platforms) => chrome.runtime.sendMessage({ type: 'publish:check', platforms, windowId: (await chrome.windows.getCurrent()).id }),
     state: () => ({ running, statuses: Object.fromEntries(Object.entries(cards).map(([k, c]) => [k, { status: c._pill.textContent, logs: [...c._ol.children].map(li => li.textContent) }])) }),
   };
 }

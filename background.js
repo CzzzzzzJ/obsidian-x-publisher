@@ -1,5 +1,5 @@
 // 扩展后台：点击工具栏图标打开侧边栏；视频分发的填写流程也跑在这里，关掉面板不受影响。
-import { run } from './lib/publish.js';
+import { run, preflight, collectLinks } from './lib/publish.js';
 
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(console.error);
 
@@ -83,6 +83,16 @@ async function start({ project, rootPath, platforms, windowId }) {
 chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
   if (msg.type === 'publish:start') {
     start(msg).then(() => reply({ ok: true }), (e) => reply({ ok: false, error: e.message }));
+    return true;
+  }
+  if (msg.type === 'publish:check') {
+    preflight(msg.platforms, { windowId: msg.windowId, keepTabs: false })
+      .then((r) => reply({ ok: true, result: r }), (e) => reply({ ok: false, error: e.message }));
+    return true;
+  }
+  if (msg.type === 'publish:links') {
+    collectLinks(msg.project, msg.platforms, { windowId: msg.windowId })
+      .then((r) => reply({ ok: true, result: r }), (e) => reply({ ok: false, error: e.message }));
     return true;
   }
   if (msg.type === 'publish:stop') { if (job) job.stop = true; reply({ ok: true }); return; }

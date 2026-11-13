@@ -58,7 +58,7 @@
 | 视频 | `input[type=file]`（唯一一个） |
 | 标题 | `input[placeholder="填写作品标题，为作品获得更多流量"]`，focus + insertText（≤30） |
 | 简介 | `.editor-kit-container[contenteditable=true]`，逐行 insertText + 回车 |
-| 话题 | 输入 `#话题` → 点 `[class*=mention-suggest-item-container]` 中首行完全匹配的项 |
+| 话题 | **最多 5 个**（第 6 个起不会变成话题）。逐字输入 `#话题`（整串 insertText 时联想会停在第一个字的结果）→ 用**真实鼠标**点 `[class*=mention-suggest-item-container] > div > [class*=tag-hash]` 中首行完全匹配的项（2026-11-12：外层 container 包着全部项，`.click()` 不再生成话题）。生成后编辑器里是 `[data-mention]` 节点 |
 | 封面 | 点「选择封面」打开弹窗（「设置横封面」「设置竖封面」两个页签）。**要用标签文字为「上传封面」的那个 `semi-upload-hidden-input`**（按页面顺序是第 4 个文件输入框，第 2 个是「生成参考图」，别传错）。横页签传 4:3，切到竖页签再传 3:4（切换时会先把横封面同步过去，再覆盖）→ 完成 |
 | 未处理 | 合集、自主声明 |
 

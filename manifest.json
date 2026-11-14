@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "麦田发布助手",
-  "version": "0.3.0",
-  "description": "麦田工作台的发布引擎：一期视频一键填写到 B站/小红书/抖音/视频号/YouTube/X，Obsidian 笔记写入 X 长文。只填写，不替你点发布。",
+  "version": "0.3.1",
+  "description": "麦田工作台的发布引擎：把一期视频的标题、正文、封面和定时一次填进你常用的视频平台上传页，也能把 Obsidian 笔记写进 X 长文。只填写，发布由你自己点。",
   "permissions": [
     "sidePanel",
     "scripting",

@@ -1,7 +1,7 @@
 // 从发布素材 md 生成 publish.json，写进 NAS 工程目录，并校验。
-// 用法：node tools/make-publish.mjs <发布素材.md> <工程目录> [--require 麦当mdldm] [--schedule "2026-11-05 18:00"]
+// 用法：node tools/make-publish.mjs <发布素材.md> <工程目录> [--require 账号名标签] [--schedule "2026-11-05 18:00"]
 //
-// md 约定（mdldm-publish-assets skill 的模板）：
+// md 约定（发布 skill 的模板，见麦田仓库 skills/maitian-publish）：
 //   头部：「> 序号：31」「> 定时发布：2026-11-05 18:00」
 //   ## 三、B站       **标题：** / **简介：** / **标签：**（#标签 空格分隔）
 //   ## 四、小红书     **标题：** / **正文：**（正文最后一行是 #话题）
@@ -18,7 +18,7 @@ import { validate } from '../lib/bundle.js';
 
 const args = process.argv.slice(2);
 const opt = (k) => { const i = args.indexOf(k); return i >= 0 ? args.splice(i, 2)[1] : null; };
-const require_ = opt('--require') || '麦当mdldm';
+const require_ = opt('--require') || process.env.PUBLISH_REQUIRE_TAG || '';   // 每个平台必带的标签（比如账号名），可不填
 const scheduleArg = opt('--schedule');
 const [mdPath, dir] = args;
 if (!mdPath || !dir) { console.error('用法：node tools/make-publish.mjs <发布素材.md> <工程目录> [--require 标签] [--schedule "YYYY-MM-DD HH:mm"]'); process.exit(2); }
@@ -93,7 +93,7 @@ const out = {
   video,
   ...(durationSec ? { durationSec } : {}),
   ...(files.includes('字幕.srt') ? { subtitle: '字幕.srt' } : {}),
-  requiredTags: [require_],
+  requiredTags: require_ ? [require_] : [],
   ...(schedule ? { schedule } : {}),
   covers,
   platforms,

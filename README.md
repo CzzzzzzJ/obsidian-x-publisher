@@ -1,23 +1,23 @@
 <div align="center">
 
-# 麦当发布助手
+# 麦田发布助手
 
-**一期视频，一键填好 B 站、小红书、抖音、视频号、YouTube、X 六个平台；Obsidian 笔记，一键写进 X 长文。**
+**麦田工作台的发布引擎：一期视频，一键填好 B 站、小红书、抖音、视频号、YouTube、X 六个平台；Obsidian 笔记，一键写进 X 长文。**
 
-给多平台发视频、在 X 上写长文的创作者。插件只负责填写，最后的「发布」由你自己点。
+只负责填写，最后的「发布」由你自己点。可以单独用，也可以交给 [麦田](https://github.com/CzzzzzzJ/mdldm-maitian) 定时调度、发完自动取链接、每天采数据。
 
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-2f6bff.svg)](manifest.json)
-[![Version](https://img.shields.io/badge/version-0.2.1-ffd43b.svg)](manifest.json)
+[![Version](https://img.shields.io/badge/version-0.3.0-ffd43b.svg)](manifest.json)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-[安装](#安装) · [视频多平台分发](#视频多平台分发) · [X 长文](#x-长文使用) · [原理](#原理和踩过的坑)
+[安装](#安装) · [和麦田一起用](#和麦田一起用) · [视频多平台分发](#视频多平台分发) · [X 长文](#x-长文使用) · [原理](#原理和踩过的坑)
 
-[麦当的知识站](https://www.mdldm.club/) · [X / Twitter](https://x.com/czzzzzzJ_) · [联系作者](#联系作者)
+[麦田工作台](https://github.com/CzzzzzzJ/mdldm-maitian) · [X / Twitter](https://x.com/czzzzzzJ_) · [联系作者](#联系作者)
 
 </div>
 
 > [!TIP]
-> **想系统学会用 AI 做这类小工具？** 这个插件就是我用 Claude Code 一个下午做出来的。从 0 基础到用 AI 做出自己的产品，完整课程和每周直播都在 👉 **[麦当的知识站 mdldm.club](https://www.mdldm.club/)**
+> **想系统学会用 AI 做这类小工具？** 这个插件是我用 Claude Code 做出来的。从 0 基础到用 AI 做出自己的产品，完整课程和每周直播都在 👉 **[麦当的知识站 mdldm.club](https://www.mdldm.club/)**
 
 <p align="center"><img src="docs/assets/publish-demo.gif" alt="视频分发流程演示：打开插件、选 NAS 发布目录、校验、一键填写六个平台" /></p>
 <p align="center"><sub>视频分发流程演示（示意界面，<a href="docs/assets/publish-demo.mp4">高清 MP4</a>）</sub></p>
@@ -51,10 +51,22 @@
 
 ## 安装
 
-1. 下载本仓库：`git clone https://github.com/CzzzzzzJ/obsidian-x-publisher.git`，或点右上角 **Code → Download ZIP** 后解压
+1. 下载本仓库：`git clone https://github.com/CzzzzzzJ/mdldm-maitian-publisher.git`，或点右上角 **Code → Download ZIP** 后解压
 2. Chrome 打开 `chrome://extensions`，打开右上角「开发者模式」
 3. 点「加载已解压的扩展程序」，选择仓库文件夹
-4. 点工具栏的拼图图标，把「麦当发布助手」固定出来
+4. 点工具栏的拼图图标，把「麦田发布助手」固定出来
+
+## 和麦田一起用
+
+[麦田](https://github.com/CzzzzzzJ/mdldm-maitian) 是一套给多平台博主的开源工作台：分发和定时、各平台数据留存和大屏、接入你自己的站点看转化。三者分工：
+
+| 部分 | 做什么 |
+| --- | --- |
+| 发布 skill（在麦田仓库 `skills/`） | 让 AI 助手看片、写各平台文案、生成 `publish.json` 并校验 |
+| **麦田发布助手（本仓库）** | 各平台适配器：打开上传页、传视频和封面、填文案、设定时 |
+| 麦田 | 什么时候跑、跑到哪、防重、到点取链接、每天采数据、飞书通知 |
+
+麦田直接加载本仓库的 `lib/`（在 `config.json` 的 `pluginDir` 填本仓库路径），所以平台改版只需要更新这一个仓库。单独用插件时，按下面「视频多平台分发」在侧边栏里操作即可。
 
 ## 视频多平台分发
 
@@ -169,7 +181,7 @@ X 长文编辑器基于 Draft.js。插件用 `chrome.scripting.executeScript({ w
 
 - **想学会用 AI 做出自己的工具和产品**：访问 👉 [**麦当的知识站 mdldm.club**](https://www.mdldm.club/)。0 基础 AI Agent / Vibe Coding 系列课、每周会员直播、答疑群都在这里
 - **想搭一个自己的知识付费站**：看我开源的 [mdldm Knowledge Kit](https://github.com/CzzzzzzJ/mdldm-knowledge-kit)
-- **Bug 和功能建议**：提 [GitHub Issue](https://github.com/CzzzzzzJ/obsidian-x-publisher/issues)
+- **Bug 和功能建议**：提 [GitHub Issue](https://github.com/CzzzzzzJ/mdldm-maitian-publisher/issues)
 - **课程合作、品牌合作、企业 AI 培训**：通过 [X / Twitter](https://x.com/czzzzzzJ_) 或 [个人联系页](https://www.mdldm.club/about) 联系，或在 B 站、小红书、抖音搜索 **麦当mdldm**
 
 | 个人微信 |

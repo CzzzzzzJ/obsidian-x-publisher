@@ -7,7 +7,7 @@
 只负责填写，最后的「发布」由你自己点。可以单独用，也可以交给 [麦田](https://github.com/CzzzzzzJ/mdldm-maitian) 定时调度、发完自动取链接、每天采数据。
 
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-2f6bff.svg)](manifest.json)
-[![Version](https://img.shields.io/badge/version-0.3.0-ffd43b.svg)](manifest.json)
+[![Version](https://img.shields.io/badge/version-0.3.1-ffd43b.svg)](manifest.json)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 [安装](#安装) · [和麦田一起用](#和麦田一起用) · [视频多平台分发](#视频多平台分发) · [X 长文](#x-长文使用) · [原理](#原理和踩过的坑)

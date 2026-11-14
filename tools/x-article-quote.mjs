@@ -110,6 +110,10 @@ try {
   await call({ op: 'close', tabIds: [V] }).catch(() => {});
   const msg = `X 第 4 期：长文 ${status}；视频帖 ${posted.url || '（主页上没找到，去看一眼）'}${posted.n > 1 ? `；⚠️ 视频帖出现了 ${posted.n} 条` : ''}`;
   log(msg); await notify(msg);
+  // 回写麦田：这一期的 X 标成已发布（--hub-id <麦田里的期 id>）
+  if (args['hub-id'] && posted.url) {
+    try { (await import('node:child_process')).execFileSync(process.execPath, [join(HUB, 'src/hub.mjs'), 'mark', args['hub-id'], 'x', 'published', `长文 ${status}；视频帖引用长文`, '--url', posted.url], { stdio: 'ignore' }); } catch (e) { log('麦田没回写上：', e.message); }
+  }
 } catch (e) {
   log('❌', e.message); await notify(`X 第 4 期长文 + 视频帖出错：${e.message}`); process.exit(1);
 }

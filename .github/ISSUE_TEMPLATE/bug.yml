@@ -1,0 +1,20 @@
+name: 平台填不上了
+description: 某个平台的上传页改版、某一项没填上
+labels: [bug]
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 哪个平台
+      options: [B站, 抖音, 小红书, 视频号, YouTube, X 视频帖, X 长文, 其他]
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: 哪一项没填上
+      description: 标题、正文、话题、封面、定时……侧边栏状态卡上的提示原样贴过来；有截图更好（遮住账号信息）
+    validations: { required: true }
+  - type: input
+    id: ver
+    attributes:
+      label: 插件版本 / Chrome 版本

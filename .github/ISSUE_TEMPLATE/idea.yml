@@ -1,0 +1,10 @@
+name: 想要的功能
+description: 你希望麦田多做点什么
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: 你想做成什么事
+      description: 先说你遇到的场景，再说希望怎么解决
+    validations: { required: true }

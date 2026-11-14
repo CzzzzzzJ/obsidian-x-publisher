@@ -19,8 +19,8 @@
 > [!TIP]
 > **想系统学会用 AI 做这类小工具？** 这个插件是我用 Claude Code 做出来的。从 0 基础到用 AI 做出自己的产品，完整课程和每周直播都在 👉 **[麦当的知识站 mdldm.club](https://www.mdldm.club/)**
 
-<p align="center"><img src="docs/assets/publish-demo.gif" alt="视频分发流程演示：打开插件、选 NAS 发布目录、校验、一键填写六个平台" /></p>
-<p align="center"><sub>视频分发流程演示（示意界面，<a href="docs/assets/publish-demo.mp4">高清 MP4</a>）</sub></p>
+<p align="center"><img src="https://github.com/CzzzzzzJ/mdldm-maitian-publisher/releases/download/media/publish-demo.gif" alt="视频分发流程演示：打开插件、选 NAS 发布目录、校验、一键填写六个平台" /></p>
+<p align="center"><sub>视频分发流程演示（示意界面，<a href="https://github.com/CzzzzzzJ/mdldm-maitian-publisher/releases/download/media/publish-demo.mp4">高清 MP4</a>）</sub></p>
 
 ## 它能做什么
 
@@ -93,7 +93,7 @@
 
 ## X 长文使用
 
-<p align="center"><img src="docs/assets/demo.gif" width="720" alt="X 长文流程演示：点插件图标、选 Obsidian 笔记、一键插入 X 长文草稿" /></p>
+<p align="center"><img src="https://github.com/CzzzzzzJ/mdldm-maitian-publisher/releases/download/media/demo.gif" width="720" alt="X 长文流程演示：点插件图标、选 Obsidian 笔记、一键插入 X 长文草稿" /></p>
 
 1. 在 X 上新建一篇长文，停在编辑页（`x.com/compose/articles/edit/...`）
 2. 点工具栏的插件图标，右侧打开面板，切到「X 长文」

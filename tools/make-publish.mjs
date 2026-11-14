@@ -75,7 +75,11 @@ if ((s = sec('小红书'))) { const b = splitTopics(field(s, '正文') || ''); p
 if ((s = sec('抖音'))) { const b = splitTopics(field(s, '正文') || ''); platforms.douyin = { covers: pick('4x3', '3x4'), title: field(s, '标题'), body: b.body, topics: b.topics }; }
 if ((s = sec('视频号'))) { const b = splitTopics(field(s, '描述') || ''); platforms.channels = { covers: pick('4x3', '3x4'), shortTitle: field(s, '短标题'), body: b.body, topics: b.topics }; }
 if ((s = sec('YouTube'))) platforms.youtube = { covers: pick('16x9'), title: field(s, '标题'), desc: field(s, '简介'), tags: (field(s, '标签') || '').split(/[,，]/).map(x => x.trim()).filter(Boolean) };
-if ((s = sec('X'))) platforms.x = { covers: [], text: clean(s) };
+if ((s = sec('X'))) {
+  // 「**长文：** <长文草稿编辑页地址>」：这期 X 走「长文 + 视频帖引用长文」，由麦田在定时前调度，其余内容是视频帖文案
+  const m = s.match(/^\*\*长文：\*\*\s*(https:\/\/x\.com\/compose\/articles\/edit\/\d+)\s*$/m);
+  platforms.x = m ? { covers: [], mode: 'article+quote', article: m[1], text: clean(s.replace(m[0], '').split('\n').filter(l => !/^>/.test(l)).join('\n')) } : { covers: [], text: clean(s) };
+}
 
 // 成片时长（秒）：有 ffprobe 就读出来，给需要时长的平台用
 let durationSec;

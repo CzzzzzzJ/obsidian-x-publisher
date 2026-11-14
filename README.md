@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/readme/banner.png" alt="麦田发布助手 · 一期视频一键填好六个平台，只填写不发布" />
+
 # 麦田发布助手
 
 **麦田工作台的发布引擎：一期视频，一键填好 B 站、小红书、抖音、视频号、YouTube、X 六个平台；Obsidian 笔记，一键写进 X 长文。**
@@ -9,6 +11,7 @@
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-2f6bff.svg)](manifest.json)
 [![Version](https://img.shields.io/badge/version-0.3.1-ffd43b.svg)](manifest.json)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/CzzzzzzJ/mdldm-maitian-publisher?style=social)](https://github.com/CzzzzzzJ/mdldm-maitian-publisher/stargazers)
 
 [安装](#安装) · [和麦田一起用](#和麦田一起用) · [视频多平台分发](#视频多平台分发) · [X 长文](#x-长文使用) · [原理](#原理和踩过的坑)
 
@@ -17,10 +20,18 @@
 </div>
 
 > [!TIP]
-> **想系统学会用 AI 做这类小工具？** 这个插件是我用 Claude Code 做出来的。从 0 基础到用 AI 做出自己的产品，完整课程和每周直播都在 👉 **[麦当的知识站 mdldm.club](https://www.mdldm.club/)**
+> **想系统学会用 AI 做这类小工具？** 这个插件是我用 Claude Code 做出来的。从 0 基础到用 AI 做出自己的产品，完整课程和每周直播都在 👉 **[麦当的知识站 mdldm.club](https://www.mdldm.club/ai-course-promotion?utm_source=github&utm_medium=readme&utm_campaign=publisher)**
+
+<p align="center"><img src="https://github.com/CzzzzzzJ/mdldm-maitian/releases/download/media/maitian-publish.gif" alt="一期视频的完整发布流程：Agent 写文案 → 麦田排期 → 插件分批填写各平台 → 国内平台你来点发布" /></p>
+<p align="center"><sub>和麦田一起用的完整流程（各平台页面为示意，<a href="https://github.com/CzzzzzzJ/mdldm-maitian/releases/download/media/maitian-publish.mp4">高清 MP4</a>）</sub></p>
+
+<details>
+<summary>只看插件面板的操作演示</summary>
 
 <p align="center"><img src="https://github.com/CzzzzzzJ/mdldm-maitian-publisher/releases/download/media/publish-demo.gif" alt="视频分发流程演示：打开插件、选 NAS 发布目录、校验、一键填写六个平台" /></p>
 <p align="center"><sub>视频分发流程演示（示意界面，<a href="https://github.com/CzzzzzzJ/mdldm-maitian-publisher/releases/download/media/publish-demo.mp4">高清 MP4</a>）</sub></p>
+
+</details>
 
 ## 它能做什么
 
@@ -87,6 +98,8 @@
 4. 点一期工程，看校验结果，勾选要发的平台，点「一键填写所选平台」
 5. 插件在后台依次打开各平台上传页并填写，你可以关掉面板去做别的。工具栏图标会显示进度，结束时弹通知
 6. 全部变成「待你发布」后，逐个标签页检查、补上必填的声明项，自己点发布（设了定时就点「定时发布」）
+
+<p align="center"><img src="docs/readme/panel-video.png" width="380" alt="视频分发面板：选发布工程、校验、勾选平台、一键填写" /></p>
 
 > 浏览器顶部会出现「正在调试此浏览器」的提示条，这是插件用 Chrome 调试接口上传本地视频，填写结束后会自动断开。
 > 各平台上传页的结构和实测细节见 [docs/platform-notes.md](docs/platform-notes.md)。
@@ -177,9 +190,11 @@ X 长文编辑器基于 Draft.js。插件用 `chrome.scripting.executeScript({ w
 
 ## 联系作者
 
+<p align="center"><a href="https://www.mdldm.club/ai-course-promotion?utm_source=github&utm_medium=readme&utm_campaign=publisher"><img src="docs/readme/author.png" alt="麦当 mdldm · 0 基础 AI Agent 教学博主 · mdldm.club 知识站" /></a></p>
+
 本项目由 **麦当mdldm** 开发，是我「一人公司」内容工作流里的一环。
 
-- **想学会用 AI 做出自己的工具和产品**：访问 👉 [**麦当的知识站 mdldm.club**](https://www.mdldm.club/)。0 基础 AI Agent / Vibe Coding 系列课、每周会员直播、答疑群都在这里
+- **想学会用 AI 做出自己的工具和产品**：访问 👉 [**麦当的知识站 mdldm.club**](https://www.mdldm.club/ai-course-promotion?utm_source=github&utm_medium=readme&utm_campaign=publisher)。0 基础 AI Agent / Vibe Coding 系列课、每周会员直播、答疑群都在这里
 - **想搭一个自己的知识付费站**：看我开源的 [mdldm Knowledge Kit](https://github.com/CzzzzzzJ/mdldm-knowledge-kit)
 - **Bug 和功能建议**：提 [GitHub Issue](https://github.com/CzzzzzzJ/mdldm-maitian-publisher/issues)
 - **课程合作、品牌合作、企业 AI 培训**：通过 [X / Twitter](https://x.com/czzzzzzJ_) 或 [个人联系页](https://www.mdldm.club/about) 联系，或在 B 站、小红书、抖音搜索 **麦当mdldm**
